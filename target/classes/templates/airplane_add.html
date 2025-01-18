@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Добавление самолета</title>
+<link rel="stylesheet" th:href="@{/assets/css/history.css}">
+</head>
+<body>
+<div class="form-container">
+    <button onclick="window.location.href = '/database';">Назад</button>
+    <label>Введите название самолета:</label>
+    <input type="text" id="airplane" placeholder="(Обязательно)">
+    <label>Введите описание самолета:</label>
+    <textarea placeholder="Описание самолета" id="airplaneDescription"></textarea>
+    <button onclick="sendPostRequest()">Добавить</button>
+</div>
+<script>
+
+    function isValidString(inputString) {
+        // Регулярное выражение для проверки, что строка содержит только кириллицу, латиницу, цифры или пробелы
+        let regex = /^[a-zA-Zа-яА-Я0-9\s]{3,100}$/;
+        // Проверяем, соответствует ли строка регулярному выражению
+        return regex.test(inputString);
+    }
+    function sendPostRequest() {
+        document.getElementById("airplane").style.border = "1px solid #ccc";
+        const url = "/api/airplanes";
+        // Создаем новый экземпляр объекта XMLHttpRequest
+        const xhr = new XMLHttpRequest();
+
+        // Открываем соединение с сервером для отправки POST-запроса
+        xhr.open("POST", url);
+
+        // Устанавливаем заголовок Content-Type для POST-запроса
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Получаем значения полей ввода
+        const airplaneName = document.getElementById("airplane").value.trim();
+        const airplaneDescription = document.getElementById("airplaneDescription").value.trim();
+
+        if (!isValidString(airplaneName)){
+            document.getElementById("airplane").style.border = "2px solid red";
+            return;
+        }
+        // Создаем объект с данными для отправки на сервер
+        const data = {
+            name: airplaneName,
+            description: airplaneDescription
+        };
+        // Преобразуем данные в формат JSON
+        const jsonData = JSON.stringify(data);
+        // Отправляем POST-запрос на сервер с данными
+        xhr.send(jsonData);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    alert('Самолет успешно добавлен!');
+                } else {
+                    alert('Ошибка при добавлении самолета!');
+                }
+            }
+        };
+    }
+</script>
+</body>
+</html>

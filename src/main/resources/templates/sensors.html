@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Информация с датчиков</title>
+<link rel="stylesheet" th:href="@{/assets/css/sensors.css}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <button onclick="window.location.href='/main';">Назад</button>
+    <div>
+        <label for="airplane">Название выбранного самолета:</label>
+        <input type="text" id="airplane" name="airplane" placeholder="Название самолета" readonly>
+    
+        <label for="sensor">Выбранный датчик:</label>
+        <select id="sensor" name="sensor">
+            <option value="" disabled selected hidden>Выберите датчик</option>
+        </select>
+    </div>
+    <div class="chart-container" style="width: 40vw">
+        <canvas id="myChart" style="margin-left: 20px;"></canvas>
+    </div>
+    
+</div>
+<script th:src="@{js/sensors.js}"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Работа с базой данных</title>
+<link rel="stylesheet" th:href="@{/assets/css/database.css}">
+</head>
+<body>
+
+<div class="container">
+    <button onclick="window.location.href='/main';">Назад</button>
+    <div class="airplane_name">
+        <h2>Название выбранного самолета:</h2>
+        <input type="text" id="airplane" placeholder="Название самолета" readonly>
+    </div>
+    <div class="flex-container">
+        <div class="repairs">
+            <button onclick="window.location.href = '/history';">История ремонтов выбранного самолета</button>
+            <button onclick="window.location.href = '/history_add';">Добавить ремонт выбранному самолету</button>
+            <span style="border: 1px solid; padding: 10px; border-radius: 4px">
+                <span>Дата:</span>
+                <input type="date" id="repairDate">
+                <button id="deleteRepair">Удалить ремонт у выбранного самолета</button>
+            </span>
+        </div>
+        <div class="sensors">
+            <button onclick="window.location.href = '/sensor_add';">Добавить датчик выбранному самолету</button>
+            <span style="border: 1px solid; padding: 10px; border-radius: 4px">
+                <span>Название датчика для удаления:</span>
+                <input type="text" placeholder="(Обязательно)" id="sensorName">
+                <button id="deleteSensor">Удалить датчик у выбранного самолета</button>
+            </span>
+        </div>
+        <div class="airplanes">
+            <button onclick="window.location.href = '/airplane_add';">Добавить самолет</button>
+            <span style="border: 1px solid; padding: 10px; border-radius: 4px" class="airplane_delete">
+                <span>Название самолета для удаления:</span>
+                <input type="text" id="airplaneName" placeholder="(Обязательно)">
+                <button id="deleteAirplane">Удалить самолет</button>
+            </span>
+
+        </div>
+    </div>
+</div>
+<script th:src="@{js/database.js}"></script>
+</body>
+</html>

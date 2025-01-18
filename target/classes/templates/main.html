@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Главная страница</title>
+<link rel="stylesheet" th:href="@{/assets/css/main.css}">
+</head>
+<body>
+
+<div class="form-container">
+    <form action="/logout" method="post">
+        <button type="submit">Выйти</button>
+    </form>
+    <h2>Выбор воздушного судна:</h2>
+    <label for="airplane">Выберите воздушное судно:</label>
+    <select id="airplane" name="airplane">
+        <option value="" disabled selected hidden>Выберите воздушное судно</option>
+    </select>
+    <div class="btn-group">
+        <button onclick="window.location.href = '/sensors';">Информация с датчиков</button>
+        <button onclick="window.location.href = '/database';">Работа с базой данных</button>
+    </div>
+    <button onclick="window.location.href = '/user_add';" style="display: none;" id="addButton">Добавить нового пользователя</button>
+</div>
+<script>
+    window.addEventListener("DOMContentLoaded", () =>{
+        let xhrAirplane = new XMLHttpRequest();
+        xhrAirplane.open('GET', "/api/airplanes");
+        xhrAirplane.onreadystatechange = function() {
+            if (xhrAirplane.readyState === XMLHttpRequest.DONE) {
+                if (xhrAirplane.status === 200) {
+                    let data = JSON.parse(xhrAirplane.responseText);
+                    let selectElement = document.getElementById('airplane');
+                    console.log(data);
+                    data.forEach(function(airplane) {
+                        let option = document.createElement('option');
+                        option.value = airplane.id;
+                        option.textContent = airplane.name;
+                        selectElement.appendChild(option);
+                    });
+                    document.getElementById('airplane').value = localStorage.getItem("airplaneId");
+                } else {
+                    console.error('Ошибка при получении данных:', xhrAirplane.statusText);
+                }
+            }
+        };
+        xhrAirplane.send();
+
+        let xhrClient = new XMLHttpRequest();
+        xhrClient.open('GET', "/api/clients");
+        xhrClient.onreadystatechange = function() {
+            if (xhrClient.readyState === XMLHttpRequest.DONE) {
+                if (xhrClient.status === 200) {
+                    if (xhrClient.responseText === "ADMIN"){
+                        document.getElementById("addButton").style.display = "block";
+                    }
+                } else {
+                    console.error('Ошибка при получении данных:', xhrClient.statusText);
+                }
+            }
+        };
+        xhrClient.send();
+    })
+
+    let airplane = document.getElementById("airplane");
+    airplane.addEventListener("change", () => {
+        let selectedOption = airplane.options[airplane.selectedIndex];
+        let selectedValue = selectedOption.value;
+        let selectedText = selectedOption.textContent;
+        localStorage.setItem("airplaneId", selectedValue);
+        localStorage.setItem("airplaneName", selectedText);
+    })
+</script>
+</body>
+</html>

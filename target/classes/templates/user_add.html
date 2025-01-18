@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Добавление пользователя</title>
+  <link rel="stylesheet" href="/assets/css/user_add.css">
+</head>
+<body>
+<div class="form-container">
+  <button onclick="window.location.href='/main';">Назад</button>
+  <h2>Добавление пользователя</h2>
+  <label for="name">Имя пользователя:</label><br>
+  <input type="text" id="name" name="username" required><br>
+
+  <label for="pwd">Пароль:</label><br>
+  <input type="password" id="pwd" name="password" required><br>
+
+  <label for="role">Роль:</label><br>
+  <select id="role" name="role">
+    <option value="USER">Пользователь</option>
+    <option value="ADMIN">Администратор</option>
+  </select><br>
+
+  <button id="add">Добавить пользователя</button>
+</div>
+
+<script>
+
+  function validateDetails(string) {
+    let regexp = /^[a-zA-Z0-9]{3,15}$/;
+    return regexp.test(string);
+  }
+  document.getElementById("add").addEventListener("click", () => {
+
+    const clientUsername = document.getElementById("name").value.trim();
+    clientUsername.style.border = "1px solid #ccc";
+    const clientPassword = document.getElementById("pwd").value.trim();
+    clientPassword.style.border = "1px solid #ccc";
+    const clientRole = document.getElementById("role").value;
+
+    if (!validateDetails(clientUsername)){
+      document.getElementById("name").style.border = "2px solid red";
+      return;
+    }
+
+    if (!validateDetails(clientPassword)){
+      document.getElementById("pwd").style.border = "2px solid red";
+      return;
+    }
+
+    const data = {
+      username: clientUsername,
+      password: clientPassword,
+      role: clientRole
+    };
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/clients", true); // Adjust the endpoint URL as needed
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          alert("Пользователь успешно добавлен!");
+        } else {
+          // Handle error response
+          alert("Ошибка при добавлении пользователя" + xhr.responseText);
+        }
+      }
+    };
+
+    const jsonData = JSON.stringify(data);
+    xhr.send(jsonData); // Send the form data
+  });
+</script>
+</body>
+</html>

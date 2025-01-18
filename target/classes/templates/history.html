@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>История ремонтов</title>
+<link rel="stylesheet" th:href="@{/assets/css/history.css}">
+</head>
+<body>
+<div class="form-container">
+    <button onclick="window.location.href='/database';">Назад</button>
+        <h2>Название выбранного самолета:</h2>
+        <input type="text" id="airplane" placeholder="Название самолета" readonly>
+        <label for="options">Выберите дату:</label>
+        <select id="options" name="options">
+            <option value="" disabled selected hidden>Выберите дату ремонта</option>
+        </select>
+    <label>Описание ремонта:</label>
+    <textarea placeholder="Описание ремонта" id="description" readonly></textarea>
+</div>
+<script>
+    document.getElementById("airplane").value = localStorage.getItem("airplaneName");
+    window.addEventListener("DOMContentLoaded", () =>{
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', "/api/repairs?airplaneId=" + localStorage.getItem("airplaneId"));
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    let data = JSON.parse(xhr.responseText);
+                    let selectElement = document.getElementById('options');
+                    data.forEach(function(repair) {
+                        let option = document.createElement('option');
+                        option.value = repair.id;
+                        option.textContent = repair.date;
+                        option.setAttribute("data-description", repair.description);
+                        selectElement.appendChild(option);
+                    });
+                } else {
+                    console.error('Ошибка при получении данных:', xhr.statusText);
+                }
+            }
+        };
+        xhr.send();
+    })
+    let options = document.getElementById("options");
+    options.addEventListener("change", () => {
+        let textarea = document.getElementById("description");
+        let selectedIndex = options.selectedIndex;
+        let selectedOption = options.options[selectedIndex];
+        textarea.value = selectedOption.getAttribute("data-description");
+    })
+</script>
+</body>
+</html>

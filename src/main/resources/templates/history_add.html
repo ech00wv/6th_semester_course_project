@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Добавление датчика</title>
+<link rel="stylesheet" th:href="@{/assets/css/history.css}">
+</head>
+<body>
+<div class="form-container">
+    <button onclick="window.location.href='/database';">Назад</button>
+    <h2>Название выбранного самолета:</h2>
+    <input type="text" id="airplane" placeholder="Название самолета" readonly>
+    <label>Введите дату:</label>
+    <input type="date" id="date">
+    <label>Введите описание ремонта:</label>
+    <textarea placeholder="(Обязательно)" id="desc"></textarea>
+    <button onclick="sendPostRequest()">Добавить</button>
+</div>
+<script>
+    document.getElementById("airplane").value = localStorage.getItem("airplaneName");
+
+    function validateDate(dateInput) {
+        let date = new Date(dateInput);
+        // Проверяем, что день от 1 до 31, месяц от 1 до 12, и год больше или равен 2000
+        return date.getDate() >= 1 && date.getDate() <= 31 &&
+            date.getMonth() + 1 >= 1 && date.getMonth() + 1 <= 12 &&
+            date.getFullYear() >= 2000;
+    }
+
+    function isValidString(inputString) {
+        // Регулярное выражение для проверки, что строка содержит только кириллицу, латиницу, цифры или пробелы
+        var regex = /^[a-zA-Zа-яА-Я0-9\s]{3,100}$/;
+        // Проверяем, соответствует ли строка регулярному выражению
+        return regex.test(inputString);
+    }
+    function sendPostRequest() {
+        document.getElementById("date").style.border = "1px solid #ccc";
+        const url = "/api/repairs";
+        // Создаем новый экземпляр объекта XMLHttpRequest
+        const xhr = new XMLHttpRequest();
+
+        // Открываем соединение с сервером для отправки POST-запроса
+        xhr.open("POST", url);
+
+        // Устанавливаем заголовок Content-Type для POST-запроса
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Получаем значения полей ввода
+        const repairDate = document.getElementById("date").value;
+        const repairDesc = document.getElementById("desc").value.trim();
+        if (!validateDate(repairDate)){
+            document.getElementById("date").style.border = "2px solid red";
+            return;
+        }
+        if (!isValidString(repairDesc)){
+            document.getElementById("desc").style.border = "2px solid red";
+            return;
+        }
+        // Создаем объект с данными для отправки на сервер
+        const repairData = {
+            date: repairDate,
+            description: repairDesc
+        };
+
+        const requestData = {
+            repair: repairData,
+            airplaneId: parseInt(localStorage.getItem("airplaneId"))
+        }
+
+        console.log(requestData);
+        // Преобразуем данные в формат JSON
+        const jsonData = JSON.stringify(requestData);
+        // Отправляем POST-запрос на сервер с данными
+        xhr.send(jsonData);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Успешно получен ответ от сервера
+                    alert('Ремонт успешно добавлен!');
+                } else {
+                    // Произошла ошибка при получении ответа от сервера
+                    alert('Ошибка при добавлении ремонта!');
+                }
+            }
+        };
+    }
+</script>
+</body>
+</html>
